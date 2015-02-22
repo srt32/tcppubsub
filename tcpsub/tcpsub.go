@@ -16,22 +16,18 @@ func main() {
 	fmt.Println("Listening!")
 
 	for {
-		fmt.Println("INSIDE OF accept")
 		conn, err := ln.Accept()
 		if err != nil {
 			fmt.Printf("Problem accepting: %v", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("FROM BEFORE handleConnection")
-		//go handleConnection(conn)
-		handleConnection(conn)
+		go handleConnection(conn)
 	}
 }
 
 func handleConnection(conn net.Conn) {
-	fmt.Println("FROM INSIDE handleConnection")
-
+	defer conn.Close()
 	buf := make([]byte, 1024)
 
 	n, err := conn.Read(buf)
@@ -42,6 +38,4 @@ func handleConnection(conn net.Conn) {
 	fmt.Printf("Sending response for %v bytes \n", n)
 
 	conn.Write([]byte(fmt.Sprintf("Recieved: %v bytes \n", n)))
-
-	conn.Close()
 }
